@@ -1,0 +1,29 @@
+import React from 'react'
+import Student from '../Student'
+import StudentForm from '../StudentForm'
+import './index.css'
+
+export default function StudentList(props) {
+    return (
+        <table>
+            <caption>Student List</caption>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {                   
+                    props.stus.map(student => <Student key={student.id} student={student} />)
+                }
+            </tbody>
+            <tfoot>
+                <StudentForm />
+            </tfoot>
+        </table>
+    )
+}
