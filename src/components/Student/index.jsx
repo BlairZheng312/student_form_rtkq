@@ -1,21 +1,14 @@
-import React, { useCallback, useContext, useState } from 'react'
-import StudentContext from '../../store/StudentContext'
+import React, { useState } from 'react'
 import StudentForm from '../StudentForm'
-import useFetch from '../../hooks/useFetch'
+import { useDelStudentMutation } from '../../store/studentApi'
 
 export default function Student(props) {
   const { id, attributes: { name, gender, age, address } } = props.student
   const [editing, setEditing] = useState(false)
-
-  const studentContext = useContext(StudentContext)
-
-  const {loading, error, fetchData:deleteStudent} = useFetch({
-    url: `students/${id}`,
-    method: `delete`
-  }, studentContext.fetchData)
+  const [delStudent] = useDelStudentMutation()
 
   const deleteHandler = () => {
-    deleteStudent()
+    delStudent(props.student.id)
   }
 
   const editHandler = () => {
@@ -40,10 +33,7 @@ export default function Student(props) {
           <button onClick={editHandler}>Edit</button>
         </td>
       </tr>}
-      {editing && <StudentForm student={props.student} cancel ={cancelEdit}/>  }
-
-      {loading && <tr><td colSpan={5}>Loading</td></tr>}
-      {error && <tr><td colSpan={5}>Error</td></tr>}
+      {editing && <StudentForm studentId={id} cancel={cancelEdit}/>  }
     </>
   )
 }

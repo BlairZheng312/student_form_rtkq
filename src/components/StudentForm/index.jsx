@@ -1,15 +1,27 @@
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useAddStudentMutation, useGetStudentsByIdQuery, useUpdateStudentMutation } from '../../store/studentApi'
 import './index.css'
-import StudentContext from '../../store/StudentContext'
-import useFetch from '../../hooks/useFetch'
 
 export default function StudentForm(props) {
     const [student, setStudent] = useState({
-        name: props.student ? props.student.attributes.name : '',
-        gender: props.student ? props.student.attributes.gender : 'female',
-        age: props.student ? props.student.attributes.age : '',
-        address: props.student ? props.student.attributes.address : ''
+        name: '',
+        gender: 'female',
+        age: '',
+        address: ''
     })
+
+    const { data: studentData, isSuccess } = useGetStudentsByIdQuery(props.studentId, {
+        skip: !props.studentId
+    })
+
+    const [addStudent] = useAddStudentMutation()
+    const [updateStudent] = useUpdateStudentMutation()
+
+    useEffect(() => {
+        if (isSuccess) {
+            setStudent(studentData.attributes)
+        }
+    }, [isSuccess])
 
     const nameHandler = (e) => {
         setStudent((prevStudent) => ({ ...prevStudent, name: e.target.value }))
@@ -24,19 +36,24 @@ export default function StudentForm(props) {
         setStudent((prevStudent) => ({ ...prevStudent, address: e.target.value }))
     }
 
-    const studentContext = useContext(StudentContext)
-
-    const { loading, error, fetchData: updateStudent } = useFetch({
-        url: props.student ? `students/${props.student.id}` : `students`,
-        method: props.student ? 'put' : 'post'
-    }, studentContext.fetchData)
 
     const addHandler = () => {
-        updateStudent(student)
+        addStudent(student)
+        setStudent({
+            name: '',
+            gender: 'female',
+            age: '',
+            address: ''
+        })
     }
 
     const editHandler = () => {
-        updateStudent(student)
+        console.log(props.studentId)
+        updateStudent({
+            id: props.studentId,
+            attributes: student
+        })
+        props.cancel()
     }
 
     return (
@@ -53,18 +70,14 @@ export default function StudentForm(props) {
                 <td><input type="text" onChange={addressHandler} value={student.address} /></td>
 
                 <td>
-                    {props.student && <>
-                        <button onClick={props.cancelEdit}>Cancel</button>
+                    {props.studentId && <>
+                        <button onClick={props.cancel}>Cancel</button>
                         <button onClick={editHandler}>Update</button>
                     </>
                     }
-                    {!props.student && <button onClick={addHandler}>Add</button>}
-
+                    {!props.studentId && <button onClick={addHandler}>Add</button>}
                 </td>
             </tr>
-            {loading && <tr><td colSpan={5}>Loading</td></tr>}
-            {error && <tr><td colSpan={5}>Adding failed</td></tr>}
         </>
-
     )
 }
