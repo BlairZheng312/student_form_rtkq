@@ -5,7 +5,7 @@ const studentApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'http://localhost:1337/api/students/'
     }),
-    tagTypes:['student'],
+    tagTypes: ['student'],
     endpoints(build) {
         return {
             getStudents: build.query({
@@ -15,7 +15,7 @@ const studentApi = createApi({
                 transformResponse(baseQueryRuturnValue) {
                     return baseQueryRuturnValue.data
                 },
-                providesTags:['student']
+                providesTags: [{ type: 'student', id: 'LIST' }]
             }),
             getStudentsById: build.query({
                 query(id) {
@@ -24,8 +24,8 @@ const studentApi = createApi({
                 transformResponse(baseQueryRuturnValue) {
                     return baseQueryRuturnValue.data
                 },
-                keepUnusedDataFor: 5,
-                providesTags:['student']
+                keepUnusedDataFor: 60,
+                providesTags: ((result, error, id) => [{ type: 'student', id }])
             }),
             delStudent: build.mutation({
                 query(id) {
@@ -34,27 +34,29 @@ const studentApi = createApi({
                         method: 'delete'
                     }
                 },
-                invalidatesTags:['student']
+                invalidatesTags: ['student']
             }),
             addStudent: build.mutation({
                 query(student) {
                     return {
                         url: ``,
                         method: 'post',
-                        body: {data:student}
+                        body: { data: student }
                     }
                 },
-                invalidatesTags:['student']
+                invalidatesTags: [{ type: 'student', id: 'LIST' }]
             }),
             updateStudent: build.mutation({
                 query(student) {
                     return {
                         url: `${student.id}`,
                         method: 'put',
-                        body: {data:student.attributes}
+                        body: { data: student.attributes }
                     }
                 },
-                invalidatesTags:['student']
+                invalidatesTags: ((result, error, student) =>
+                    [{ type: 'student', id: student.id },
+                    { type: 'student', id: 'LIST' }])
             })
         }
     }

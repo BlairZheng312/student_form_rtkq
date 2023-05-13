@@ -48,7 +48,6 @@ export default function StudentForm(props) {
     }
 
     const editHandler = () => {
-        console.log(props.studentId)
         updateStudent({
             id: props.studentId,
             attributes: student
