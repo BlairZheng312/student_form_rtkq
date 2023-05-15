@@ -1,25 +1,34 @@
 import React from 'react'
-import { useGetStudentsQuery } from './store/studentApi'
-import StudentList from './components/StudentList'
+import { Routes, Route } from "react-router-dom";
+import Layout from './components/Layout';
+import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
+import LoginPage from './pages/LoginPage';
+import Auth from './components/Auth';
+import useAutoLogout from './hooks/useAutoLogout';
+import StudentPage from './pages/StudentPage';
 
-export default function App() {
-  const {data:student, isSuccess, isLoading, refetch} = useGetStudentsQuery(null, {
-    // selectFromResult: result => {
-    //   if(result.data){
-    //     result.data = result.data.filter(item =>  item.attributes.age<28 )
-    //   }     
-    //   return result
-    // },
-    pollingInterval: 0,
-    refetchOnFocus: true,
-    refetchOnReconnect: true
-  })
-  return (   
-      <div>
-        <button onClick={refetch}>Load Student Data</button>
-        {isLoading && <h3>Loading</h3>}
-        {isSuccess && <StudentList stus={student}/>}
-        </div>
-  )
+function App() {
+  useAutoLogout()
+  return (
+    <div>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={
+            <Auth>
+              <ProfilePage />
+            </Auth>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/student" element={
+            <Auth>
+              <StudentPage />
+            </Auth>
+          } />
+        </Routes>
+      </Layout>
+    </div>
+  );
 }
 
+export default App;
