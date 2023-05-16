@@ -3,7 +3,14 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 const studentApi = createApi({
     reducerPath: 'studentApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:1337/api/students/'
+        baseUrl: 'http://localhost:1337/api/students/',
+        prepareHeaders: (header, { getState }) => {
+            const token = getState().auth.token
+            if(token){
+                header.set("Authorization", `Bearer ${token}`)
+            }        
+            return header
+        }
     }),
     tagTypes: ['student'],
     endpoints(build) {

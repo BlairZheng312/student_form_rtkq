@@ -10,6 +10,6 @@ Content-Type Builder add Student (name, age, gender, address)
 Content Manager
 
 ## Edit authorization
-setting => users & permission plugin => roles => public => Student
+setting => users & permission plugin => roles => public => Student(unselect all) => authenticated => Student(select all)
 
 
